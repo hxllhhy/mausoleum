@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.proj.mausoleum.dao.CoordinateDao">
+    <insert id="insertCoordinate" parameterType="com.proj.mausoleum.pojo.Coordinate" useGeneratedKeys="true" keyProperty="coordinateId">
+        insert into tb_coordinate values
+            (#{coordinateId},#{coordinateType},#{belongId},#{x},#{y},#{remark},#{auditUsername},#{auditTime})
+    </insert>
+
+    <select id="selectCoordinateByCoordinateId" resultType="com.proj.mausoleum.pojo.Coordinate">
+        select * from tb_coordinate where coordinate_id = #{coordinateId}
+    </select>
+
+    <delete id="deleteCoordinateByCoordinateId">
+        delete from tb_coordinate where coordinate_id = #{coordinateId}
+    </delete>
+
+    <select id="selectCoordinateList" resultType="com.proj.mausoleum.pojo.Coordinate">
+        select * from tb_coordinate
+    </select>
+
+    <select id="countCoordinateList" resultType="Integer">
+        select count(*) from tb_coordinate
+    </select>
+    <select id="selectSelfCoordinateList" resultType="com.proj.mausoleum.pojo.Coordinate">
+        select * from tb_coordinate where coordinate_type = 4 and belong_id = #{userId}
+    </select>
+    <select id="selectMInfoCoordinateList" resultType="com.proj.mausoleum.pojo.CoordinateVO">
+        select coord.coordinate_id, coord.belong_id, coord.x, coord.y,
+          minfo.name, minfo.details, minfo.cover
+          from tb_coordinate coord inner join tb_minfo minfo on coord.belong_id = minfo.m_info_id
+          where coord.coordinate_type = 5
+    </select>
+
+
+</mapper>

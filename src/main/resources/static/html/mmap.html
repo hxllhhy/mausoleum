@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>汉唐帝陵文化体验平台</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <link rel="stylesheet" href="../openlayers3/ol3.css">
+    <link rel="stylesheet" href="../openlayers3/ol3-layerswitcher.css">
+    <script type="text/javascript" src="../js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../layui/layui.js"></script>
+    <script type="text/javascript" src="../openlayers3/ol3.js"></script>
+    <script type="text/javascript" src="../openlayers3/ol3-layerswitcher.js"></script>
+    <script type="text/javascript" src="../js/myjs/common/navbar.js"></script>
+    <script type="text/javascript" src="../js/myjs/mmap.js"></script>
+    <style type="text/css">
+        .ol-popup {
+            position: absolute;
+            background-color: #eeeeee;
+            -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cccccc;
+            bottom: 30px;
+            left: -49px;
+            min-width: 280px;
+        }
+
+        .ol-popup:after,
+        .ol-popup:before {
+            top: 100%;
+            border: solid transparent;
+            content: " ";
+            height: 0;
+            width: 0;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .ol-popup:after {
+            border-top-color: #eeeeee;
+            border-width: 10px;
+            left: 48px;
+            margin-left: -10px;
+        }
+
+        .ol-popup:before {
+            border-top-color: #cccccc;
+            border-width: 11px;
+            left: 48px;
+            margin-left: -11px;
+        }
+
+        .ol-popup-closer {
+            text-decoration: none;
+            position: absolute;
+            top: 2px;
+            right: 8px;
+        }
+
+        .ol-popup-closer:after {
+            content: "✖";
+        }
+
+        .find-coord {
+            position: absolute;
+            color: #000000;
+            z-index: 1;
+            margin-top: 25px;
+            margin-left: 740px;
+            width: 180px;
+            height: 25px;
+            border: 1px solid #eee;
+        }
+
+        .search-bar {
+            position: absolute;
+            z-index: 1;
+            margin-left: 690px;
+            margin-top: 25px;
+            width : 50px;
+            height: 25px;
+            background-color: #3bc1c5;
+        }
+    </style>
+</head>
+<body class="layui-layout-body" style="background-color: #F2F2F2; height: 100%; overflow-y: scroll">
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-container">
+            <div class="layui-logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;汉唐帝陵文化体验平台</div>
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"><a href="/mausoleum/html/welcome.html">平台首页</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mintroduction.html">帝陵介绍</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mpicture.html">实景风貌</a></li>
+                <li class="layui-nav-item layui-this"><a href="/mausoleum/html/mmap.html">地图位置</a></li>
+                <li class="layui-nav-item" id="manage" style="display: none"><a href="/mausoleum/html/admin/user-manage.html">后台管理</a></li>
+            </ul>
+            <div id="login0" hidden="hidden">
+                <ul class="layui-nav layui-layout-right">
+                    <li class="layui-nav-item"><a href="/mausoleum/html/login.html">登录&nbsp;/&nbsp;注册</a></li>
+                </ul>
+            </div>
+            <div id="login1" hidden="hidden">
+                <ul class="layui-nav layui-layout-right">
+                    <li class="layui-nav-item"><a href="/mausoleum/html/minfo-add.html">上传资料</a></li>
+                    <li class="layui-nav-item"><a id="me">欢迎使用：</a>
+                        <dl class="layui-nav-child" style="text-align: center">
+                            <dd id="giveFeedback"><a href="javascript:giveFeedback()">我要反馈</a></dd>
+                            <dd id="modifyPassword"><a href="javascript:modifyPassword()">修改密码</a></dd>
+                            <dd id="deleteSession"><a href="javascript:deleteSession()">退出平台</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-container">
+
+    <div class="layui-row" style="padding: 20px;">
+        <div id="popup" class="ol-popup" hidden>
+            <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+            <div id="popup-content"></div>
+        </div>
+        <div class="layui-card" style="height: 770px">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="padding: 20px">
+                <div class="layui-card-header">帝陵位置 | tips：点击地图右边的陵墓名称可以在地图中直接定位到该地址哦</div>
+                <div class="layui-card-body" style="padding: 10px 0">
+                    <div class="layui-form layui-form-pane layui-col-space10" id="coordinate" hidden="hidden">
+                        <div class="layui-col-md3">
+                            <label class="layui-form-label">坐标经度</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="x" id="x" required lay-verify="required|x"
+                                       lay-reqtext="是必填项，不能为空" placeholder="输入经度" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <label class="layui-form-label">坐标纬度</label>
+                            <div class="layui-input-block">
+                                <input type="text" name="y" id="y" required lay-verify="required|y"
+                                       lay-reqtext="是必填项，不能为空" placeholder="输入纬度" autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="savecoord_submit">保存当前坐标</button>
+                        </div>
+                        <div class="layui-col-md3">
+                            <button class="layui-btn layui-btn-fluid" id="showmycoord_submit" onclick="showmycoord()">显示我的坐标</button>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-md10">
+                        <div id="map" style="width: 100%; height: 620px">
+                            <input type="text" id="name" class="find-coord" placeholder="请输入要查询的陵墓"/>
+                            <button id="searchCoord" class="search-bar" onclick="searchCoord()">搜索</button>
+                        </div>
+                    </div>
+                    <div class="layui-col-md2">
+                        <div style="height: 620px; overflow-x:hidden; overflow-y: scroll" id="mlist"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var googleMapLayer = new ol.layer.Tile({
+        title: "影像图",
+        source: new ol.source.XYZ({
+            url: 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}'
+        })
+    });
+    var googleMark = new ol.layer.Tile({
+        title: "影像注记",
+        source: new ol.source.XYZ({
+            url: 'http://www.google.cn/maps/vt?lyrs=h@189&gl=cn&x={x}&y={y}&z={z}'
+        })
+    });
+    var googleMap = new ol.layer.Tile({
+        title: "矢量图",
+        source: new ol.source.XYZ({
+            url: 'http://www.google.cn/maps/vt?lyrs=m@189&gl=cn&x={x}&y={y}&z={z}'
+        })
+    });
+
+
+    var map = new ol.Map({
+        controls: ol.control.defaults().extend([
+
+            new ol.control.FullScreen(), // 全屏控件
+            new ol.control.MousePosition(), // 鼠标位置控件
+            new ol.control.OverviewMap(), //鸟瞰图控件
+            new ol.control.ScaleLine(), // 比例尺控件
+            new ol.control.ZoomSlider(), // 缩放滚动条控件
+            new ol.control.ZoomToExtent() // 放大到设定区域控件
+        ]),
+        layers: [googleMapLayer, googleMark, googleMap],
+        view: new ol.View({
+            center: [108.7, 34.4],
+            projection: 'EPSG:4326',
+            zoom: 10
+        }),
+        target: 'map'
+    });
+    var layerSwitcher = new ol.control.LayerSwitcher({
+        tipLabel: '切换图层'
+    });
+    map.addControl(layerSwitcher);
+
+    /**
+     * 为map添加鼠标移动事件监听，当指向标注时改变鼠标光标状态
+     */
+    map.on('pointermove', function (e) {
+        var pixel = map.getEventPixel(e.originalEvent);
+        var hit = map.hasFeatureAtPixel(pixel);
+        map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+    });
+    var vectorSource1 = new ol.source.Vector({});
+    //创建图标样式
+    var createLabelStyle1 = function (feature) {
+        return new ol.style.Style({
+            image: new ol.style.Icon({
+                anchor: [0.5, 40],
+                anchorOrigin: 'top-right',
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                offsetOrigin: 'top-right',
+                opacity: 0.75,  //透明度
+                src: '../icon/icon1.png'
+            }),
+            text: new ol.style.Text({
+                textAlign: 'center', //位置
+                textBaseline: 'middle', //基准线
+                font: '14px',  //文字样式
+                text: feature.get('name'),  //文本内容
+                fill: new ol.style.Fill({color: '#aa3300'}), //文本填充样式（即文字颜色）
+                stroke: new ol.style.Stroke({color: '#ffcc33', width: 2})
+            })
+        });
+    };
+    $.getJSON('/mausoleum/coordinate/getMCList', function (result) {
+        var data = result.data;
+        console.log(data);
+        var minX = data[0].x;
+        var maxX = data[0].x;
+        var minY = data[0].y;
+        var maxY = data[0].y;
+        for(var i = 0; i < data.length; i++) {
+            var x = data[i].x;
+            var y = data[i].y;
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+            var currentPoint = [x, y];
+            //实例化Vector要素，通过矢量图层添加到地图容器中
+            var iconFeature1 = new ol.Feature({
+                geometry: new ol.geom.Point(currentPoint, 'XY'),
+                name : data[i].name,  //名称属性
+                id : data[i].belongId,
+                type : 5
+            });
+            iconFeature1.setStyle(createLabelStyle1(iconFeature1));
+            //矢量标注的数据源
+            vectorSource1.addFeature(iconFeature1);
+            console.log(iconFeature1.getGeometry());
+            if (data.length == 1) {
+                var view = map.getView();
+                view.setCenter([data[0].x, data[0].y]);
+                view.setZoom(15);
+            }
+            else {
+                map.getView().fit([minX, minY, maxX, maxY], map.getSize())
+            }
+        }
+    });
+    //矢量标注图层
+    var vectorLayer1 = new ol.layer.Vector({
+        title: "帝陵",
+        source: vectorSource1
+    });
+    map.addLayer(vectorLayer1);
+
+
+    layui.use(['form', 'layer', 'flow'], function () {
+        var form = layui.form, layer = layui.layer, flow = layui.flow;
+        flow.load({
+            elem: '#mlist'
+            , done: function (page, next) {
+                var lis = [];
+                $.get('/mausoleum/minfo/getList?page=' + page + '&limit=100', {isHtml : false}, function (res) {
+                    layui.each(res.data, function (index, item) {
+                        lis.push(
+                            '<div class="my-line-limit-length-head" style="font-size: 15px; height: 25px;">' +
+                            '<span style="color: #009688">&nbsp;&nbsp;>>&nbsp;</span>' +
+                            '<a style="cursor: pointer" onclick="showclickmcoord(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">' + item.name + '</a>' +
+                            '</div>');
+                    });
+
+                    next(lis.join(''), page < Math.ceil(res.count / 100));
+                });
+            }
+        });
+        form.verify({
+            // x: [
+            //     // /^[\S]{1,12}$/,
+            //     '经度不能出现空格'
+            // ],
+            // y: [
+            //     ///^[\S]{1,12}$/,
+            //     '纬度不能出现空格'
+            // ]
+        });
+
+        var html = '<option value="0" selected>我的坐标</option>';
+        $.getJSON('/mausoleum/minfo/getList', {isHtml : false}, function (result) {
+            var data = result.data;
+            $.each(data, function (index, item) {
+                if (item.coordinateId == 0) {
+                    html += '<option value="' + item.mInfoId + '">' + item.name + '</option>';
+                }
+            });
+        });
+        form.on('submit(savecoord_submit)', function (data) {
+            layer.open({
+                type: 1,
+                skin: 'layui-layer-rim',
+                area: ['380px', '250px'],
+                content: '<div id="coordinfo" class="layui-form layui-form-pane" style="padding: 20px;"> ' +
+                '<form method="post"> ' +
+                '<div class="layui-form-item">' +
+                '<label class="layui-form-label">坐标所属</label>' +
+                '<div class="layui-input-block">' +
+                '<select name="belong" id="belong" lay-filter="belong" lay-search>' +
+                html +
+                '</select>' +
+                '</div>' +
+                '</div>' +
+                '<div class="layui-form-item"> ' +
+                '<label class="layui-form-label">坐标备注</label> ' +
+                '<div class="layui-input-block"> ' +
+                '<input type="text" name="remark" id="remark" placeholder="填写" autocomplete="off" class="layui-input">' +
+                '</div> ' +
+                '</div> ' +
+                '<div class="layui-form-item"> ' +
+                '<button class="layui-btn layui-btn-fluid" lay-submit lay-filter="savecoord2_submit">立即提交</button> ' +
+                '</div>' +
+                '</form> ' +
+                '</div>'
+            });
+            form.render();
+            form.on('select(belong)', function (data) {
+                if (data.value != 0) {
+                    $("#remark").attr('disabled', 'disabled');
+                    $("#remark").attr('style', 'cursor:not-allowed');
+                } else {
+                    $("#remark").removeAttr('disabled', 'disabled');
+                    $("#remark").removeAttr('style', 'cursor:not-allowed');
+                }
+            });
+
+            form.on('submit(savecoord2_submit)', function (data) {
+                var url = '/mausoleum/audit/save';
+                $.post(url, {
+                    auditType: data.field.belong == 0 ? 4 : 5,
+                    belongId: data.field.belong,
+                    fieldOne: $('#x').val(),
+                    fieldTwo: $('#y').val(),
+                    fieldThree: data.field.belong == 0 ? data.field.remark : $("#belong option:selected").text()
+                }, function (result) {
+                    if (result.code == 0) {
+                        layer.closeAll();
+                        layer.msg('提交成功，请耐心等待审核', {icon: 6});
+                    } else {
+                        layer.msg(result.msg, {icon: 5, anim: 6});
+                    }
+                });
+                return false;
+            });
+        });
+    });
+</script>
+</body>
+</html>

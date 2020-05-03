@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>汉唐帝陵文化体验平台</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script type="text/javascript" src="../layui/layui.js"></script>
+    <script type="text/javascript" src="../js/jquery/jquery.min.js"></script>
+</head>
+<body class="layui-layout-body" style="background-color: #F2F2F2; height: 100%; overflow-y: scroll">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-container">
+            <div class="layui-logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;汉唐帝陵文化体验平台</div>
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item"><a href="/mausoleum/html/welcome.html">平台首页</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mintroduction.html">帝陵介绍</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mpicture.html">实景风貌</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mmap.html">地图位置</a></li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item layui-this"><a href="/mausoleum/html/login.html">登录&nbsp;/&nbsp;注册</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="layui-container">
+    <div class="layui-row" style="padding: 20px">
+        <div class="layui-card">
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" style="padding: 20px">
+                <ul class="layui-tab-title">
+                    <li><a href="/mausoleum/html/login.html">登录</a></li>
+                    <li class="layui-this">注册</li>
+                </ul>
+                <div class="layui-form layui-tab-content" id="register" style="padding: 20px 0">
+                    <div class="layui-tab-item layui-show">
+                        <div class="layui-form layui-form-pane">
+                            <form method="post">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">用户名</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="username" id="username" required lay-verify="required|username"
+                                               lay-reqtext="用户名是必填项，不能为空" placeholder="请输入4-12位字母或数字" autocomplete="off"
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">密码</label>
+                                    <div class="layui-input-inline">
+                                        <input type="password" name="password" id="password" required lay-verify="required|password"
+                                               lay-reqtext="密码是必填项，不能为空" placeholder="请输入6-20位字母和数字" autocomplete="off"
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">确认密码</label>
+                                    <div class="layui-input-inline">
+                                        <input type="password" name="confirmPassword" id="confirmPassword" required lay-verify="required"
+                                               lay-reqtext="确认密码是必填项，不能为空" placeholder="再次输入密码" autocomplete="off"
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">邮箱</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="email" id="email" required lay-verify="required|email"
+                                               lay-reqtext="邮箱是必填项，不能为空" placeholder="用于找回密码，请谨慎填写" autocomplete="off"
+                                               class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">验证码</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="identifyCode" id="identifyCode" lay-verify="required"
+                                               lay-reqtext="验证码是必填项，不能为空" placeholder="请输入验证码" autocomplete="off"
+                                               class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid" style="padding: 0!important;">
+                                        <img id="captchaImage" src="/mausoleum/user/changeCode" style="height: 38px;width: 85px;"/>
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <button class="layui-btn" lay-submit lay-filter="register_submit">立即提交</button>
+                                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#captchaImage").attr("src", "/mausoleum/user/changeCode?timestamp=" + (new Date()).valueOf());
+    $('#captchaImage').click(function () {
+        $("#captchaImage").attr("src", "/mausoleum/user/changeCode?timestamp=" + (new Date()).valueOf());
+    });
+    layui.use('form', function () {
+        var form = layui.form, layer = layui.layer;
+        form.verify({
+            username: [
+                /^[a-zA-Z0-9_]{4,12}$/,
+                '用户名必须由【4到12位】的【字母或数字】组成，不能出现空格'
+            ],
+            password: [
+                /^(?=.*[a-zA-Z])(?=.*[0-9])[A-Za-z0-9]{6,20}$/,
+                '密码必须由【6到20位】的【字母和数字】组成，不能出现空格'
+            ]
+        });
+
+        //监听提交
+        form.on('submit(register_submit)', function (data) {
+            if (data.field.password != data.field.confirmPassword) {
+                layer.msg('请再次确认密码是否一致', {icon: 5, anim: 6});
+                return false;
+            }
+            var url = '/mausoleum/user/register';
+            $.post(url, {
+                username: data.field.username,
+                password: data.field.password,
+                email: data.field.email,
+                identifyCode: data.field.identifyCode,
+                role: 1
+            }, function (result) {
+                if (result.code == 0) {
+                    layer.msg('注册成功', {icon: 6});
+                } else {
+                    layer.msg(result.msg, {icon: 5, anim: 6});
+                }
+                $("#captchaImage").attr("src", "/mausoleum/user/changeCode?timestamp=" + (new Date()).valueOf());
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

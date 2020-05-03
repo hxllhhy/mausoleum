@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.proj.mausoleum.dao.AuditDao">
+    <insert id="insertAudit" parameterType="com.proj.mausoleum.pojo.Audit">
+        insert into tb_audit values 
+          (#{auditId},#{auditType},#{belongId},#{fieldOne},#{fieldTwo},#{fieldThree},
+           #{submitUsername},#{submitTime},#{auditUsername},#{auditTime},#{auditStatus})
+    </insert>
+
+    <select id="selectAuditList" resultType="com.proj.mausoleum.pojo.Audit">
+        select * from tb_audit where
+        <if test="type==12">
+             audit_type between 1 and 2
+        </if>
+        <if test="type==3">
+            audit_type = 3
+        </if>
+        <if test="type==45">
+            audit_type between 4 and 5
+        </if>
+        order by if(isnull(audit_time),0,1),audit_time desc, audit_id desc
+    </select>
+    <select id="countAuditList" resultType="Integer">
+        select count(*) from tb_audit where
+        <if test="type==12">
+            audit_type between 1 and 2
+        </if>
+        <if test="type==3">
+            audit_type = 3
+        </if>
+        <if test="type==45">
+            audit_type between 4 and 5
+        </if>
+    </select>
+
+    <update id="updateAudit" parameterType="com.proj.mausoleum.pojo.Audit">
+        update tb_audit set audit_username = #{auditUsername}, audit_time = #{auditTime}, audit_status = #{auditStatus} where audit_id = #{auditId}
+    </update>
+
+    <delete id="deleteAuditAboutModifyMInfo">
+        delete from tb_audit where audit_type = 2 and belong_id = #{belongId}
+    </delete>
+
+
+</mapper>

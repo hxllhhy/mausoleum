@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.proj.mausoleum.dao.FeedbackDao">
+    <insert id="insertFeedback" parameterType="com.proj.mausoleum.pojo.Feedback">
+        insert into tb_feedback values (#{feedbackId},#{content},#{username},#{time},#{status})
+    </insert>
+
+    <select id="selectFeedbackList" resultType="com.proj.mausoleum.pojo.Feedback">
+        select * from tb_feedback order by status, time desc
+    </select>
+
+    <select id="countFeedbackList" resultType="Integer">
+        select count(*) from tb_feedback
+    </select>
+
+    <update id="updateFeedback" parameterType="com.proj.mausoleum.pojo.Feedback">
+        update tb_feedback set status = #{status} where feedback_id = #{feedbackId}
+    </update>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.proj.mausoleum.dao.MInfoDao">
+    <insert id="insertMInfo" parameterType="com.proj.mausoleum.pojo.MInfo" useGeneratedKeys="true" keyProperty="mInfoId">
+        insert into tb_minfo values (#{mInfoId},#{name},#{details},#{cover},#{lastAuditUsername},#{lastAuditTime},#{coordinateId})
+    </insert>
+    <select id="selectMInfoByMInfoId" resultType="com.proj.mausoleum.pojo.MInfo">
+        select * from tb_minfo where m_info_id = #{mInfoId}
+    </select>
+
+    <update id="updateMInfo" parameterType="com.proj.mausoleum.pojo.MInfo">
+        update tb_minfo
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="details != null">details = #{details},</if>
+            <if test="cover != null">cover = #{cover},</if>
+            <if test="lastAuditUsername != null">last_audit_username = #{lastAuditUsername},</if>
+            <if test="lastAuditTime != null">last_audit_time = #{lastAuditTime},</if>
+            <if test="coordinateId != null">coordinate_id = #{coordinateId}</if>
+        </set>
+        where m_info_id = #{mInfoId}
+    </update>
+
+    <select id="selectMInfoList" parameterType="com.proj.mausoleum.pojo.MInfo" resultType="com.proj.mausoleum.pojo.MInfo">
+        select * from tb_minfo
+        <where>
+            <if test="name != null">
+                name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="countMInfoList" resultType="Integer">
+        select count(*) from tb_minfo
+        <where>
+            <if test="name != null">
+                name like concat('%', #{name}, '%')
+            </if>
+        </where>
+    </select>
+    
+    <delete id="deleteMInfoByMInfoId">
+        delete from tb_minfo where m_info_id = #{mInfoId}
+    </delete>
+
+</mapper>

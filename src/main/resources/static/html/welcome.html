@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>汉唐帝陵文化体验平台</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script type="text/javascript" src="../layui/layui.js"></script>
+    <script type="text/javascript" src="../js/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="../js/myjs/common/navbar.js"></script>
+
+</head>
+<body class="layui-layout-body" style="background-color: #F2F2F2; height: 100%; overflow-y: scroll">
+
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-container">
+            <div class="layui-logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;汉唐帝陵文化体验平台</div>
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layui-this"><a href="/mausoleum/html/welcome.html">平台首页</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mintroduction.html">帝陵介绍</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mpicture.html">实景风貌</a></li>
+                <li class="layui-nav-item"><a href="/mausoleum/html/mmap.html">地图位置</a></li>
+                <li class="layui-nav-item" id="manage" style="display: none"><a href="/mausoleum/html/admin/user-manage.html">后台管理</a></li>
+            </ul>
+            <div id="login0" hidden="hidden">
+                <ul class="layui-nav layui-layout-right">
+                    <li class="layui-nav-item"><a href="/mausoleum/html/login.html">登录&nbsp;/&nbsp;注册</a></li>
+                </ul>
+            </div>
+            <div id="login1" hidden="hidden">
+                <ul class="layui-nav layui-layout-right">
+                    <li class="layui-nav-item"><a href="/mausoleum/html/minfo-add.html">上传资料</a></li>
+                    <li class="layui-nav-item"><a id="me">欢迎使用：</a>
+                        <dl class="layui-nav-child" style="text-align: center">
+                            <dd id="giveFeedback"><a href="javascript:giveFeedback()">我要反馈</a></dd>
+                            <dd id="modifyPassword"><a href="javascript:modifyPassword()">修改密码</a></dd>
+                            <dd id="deleteSession"><a href="javascript:deleteSession()">退出平台</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="layui-carousel" id="test1" lay-filter="test1">
+        <div carousel-item id="carousel">
+        </div>
+    </div>
+
+
+<script>
+    $.getJSON('/mausoleum/picture/getList?page=1&limit=20', function (res) {
+        var html = '';
+        $.each(res.data, function (index, item) {
+            html += '<div><img src="' + item.src + '" width="100%" height="100%"/></div>';
+        });
+        $('#carousel').append(html);
+    });
+    layui.use('carousel', function () {
+        var carousel = layui.carousel;
+        //建造实例
+        carousel.render({
+            elem: '#test1',
+            width: '100%',//设置容器宽度
+            height: '670px',
+            arrow: 'always', //始终显示箭头
+            interval : 2000
+        });
+    });
+</script>
+
+
+</body>
+</html>

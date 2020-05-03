@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.proj.mausoleum.dao.UserDao">
+    <insert id="insertUser" parameterType="com.proj.mausoleum.pojo.User">
+        insert into tb_user values (#{userId}, #{username}, #{password}, #{email}, #{role})
+    </insert>
+    <select id="selectUser" parameterType="com.proj.mausoleum.pojo.User" resultType="com.proj.mausoleum.pojo.User">
+        select * from tb_user where username = #{username}
+        <if test="password != null">
+            and password = #{password}
+        </if>
+        <if test="email != null">
+            and email = #{email}
+        </if>
+    </select>
+    <select id="selectUserList" resultType="com.proj.mausoleum.pojo.User">
+        select * from tb_user order by role,user_id
+    </select>
+    <select id="countUserList" resultType="Integer">
+        select count(*) from tb_user
+    </select>
+
+    <update id="updateUser" parameterType="com.proj.mausoleum.pojo.User">
+        update tb_user
+        <set>
+            <if test="password != null">password = #{password},</if>
+        </set>
+        where username = #{username}
+    </update>
+
+    <delete id="deleteUserByUserId">
+        delete from tb_user where user_id = #{userId}
+    </delete>
+
+
+
+</mapper>
